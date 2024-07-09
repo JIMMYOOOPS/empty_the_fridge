@@ -16,6 +16,14 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@core": [
+        "./apps/core/src"
+      ],
+      "@core/*": [
+        "./apps/core/src/*"
+      ],
+    }
   }
 }
