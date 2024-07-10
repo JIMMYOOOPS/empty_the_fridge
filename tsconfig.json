@@ -24,6 +24,7 @@
       "@core/*": [
         "./apps/core/src/*"
       ],
-    }
+    },
+    "types": ["class-validator"]
   }
 }

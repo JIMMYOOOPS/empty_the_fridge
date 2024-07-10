@@ -7,8 +7,11 @@ import { RecipeRepository } from '@core/infrastructure/database/repository/recip
 export class RecipeService {
   constructor(private readonly recipeRepository: RecipeRepository) {}
 
-  async findRecipe(): Promise<PaginationResult<Recipe>> {
-    return this.recipeRepository.paginateRecipe();
+  async findRecipe(options: {
+    size?: number;
+    page?: number;
+  }): Promise<PaginationResult<Recipe>> {
+    return this.recipeRepository.paginateRecipe(options);
   }
 
   // Add other methods (findById, create, update, delete) similarly
