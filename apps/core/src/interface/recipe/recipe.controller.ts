@@ -15,9 +15,10 @@ export class RecipeController {
     type: FindRecipeResponseDto,
   })
   @Get()
-  async findAll(@Query() params: FindAllRecipeDto): Promise<PaginationResult<Recipe>> {
+  async findAll(
+    @Query() params: FindAllRecipeDto,
+  ): Promise<PaginationResult<Recipe>> {
     const { page, size } = params;
-    console.log('page', page);
     const options = {
       page,
       size,
