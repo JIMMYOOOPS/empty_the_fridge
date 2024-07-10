@@ -7,7 +7,7 @@ export class RecipeController {
 
   @Get()
   async findAll() {
-    return this.recipeService.findAll();
+    return this.recipeService.findRecipe();
   }
 
   // Add other endpoints (GET by ID, POST, PUT, DELETE) similarly
