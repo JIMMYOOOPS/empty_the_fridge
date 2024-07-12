@@ -33,6 +33,7 @@
     "prisma:generate": "pnpm exec prisma generate --schema=apps/core/src/infrastructure/prisma/schema.prisma"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.14.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",

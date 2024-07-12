@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database.service'; // Assume this service encapsulates Prisma client
-import { IRecipeEntity } from '@core/domain/interfaces/recipeEntity.interface';
+import { IRecipeEntity } from '@core/domain/interfaces/recipe_entity.interface';
 import { Recipe } from '@core/domain/models/recipe.model';
 import { PaginationResult } from '@core/shared/interface/paginator.interface';
 
