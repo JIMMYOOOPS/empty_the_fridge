@@ -3,7 +3,7 @@
 // The RecipeModule should import the DatabaseModule and provide the RecipeService and RecipeController.
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '../infrastructure/database/database.module';
-import { RecipeController } from '../interface/recipe.controller';
+import { RecipeController } from '../interface/recipe/recipe.controller';
 import { RecipeService } from '../application/services/recipe.service';
 import { RecipeRepository } from '../infrastructure/database/repository/recipe.repository';
 
