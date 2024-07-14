@@ -11,9 +11,12 @@ export class RecipeProcessorService {
     ) {}
 
     async processRecipe(userIngredients: IUserIngredients) {
-        const transformedRecipe = this.recipeTransformationService.transformRecipe(userIngredients);
+        const transformedRecipe = await this.recipeTransformationService.transformRecipe(userIngredients);
         // save the recipe to the database
-        // const recipe = await this.recipeRepository.create(transformedRecipe);
+        const recipe = await this.recipeRepository.create(transformedRecipe);
+        if (!recipe) {
+            throw new Error("Failed to save the recipe");
+        }
         return transformedRecipe;
     }
 }

@@ -9,11 +9,11 @@ datasource db {
 
 model Recipe {
   id                String            @id @default(cuid())
-  name              String
+  name              String            @unique
   ingredients       RecipeIngredient[]
   origin            String
-  steps_to_produce  String[]
-  recipeSkills      RecipeSkill[]
+  stepsToProduce  String[]
+  skillsRequired      RecipeSkill[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }

@@ -14,7 +14,7 @@ const RecipeJSONPropertyExample = {
     ],
     "origin": "Asian",
     "calories": "400",
-    "steps_to_produce": [
+    "stepsToProduce": [
       "Heat a tablespoon of oil in a large pan or wok over medium-high heat.",
       "Add chopped onion and diced chicken. Cook until chicken is no longer pink.",
       "Push chicken to one side of the pan, pour beaten eggs onto the other side. Scramble eggs until cooked through.",
@@ -24,7 +24,7 @@ const RecipeJSONPropertyExample = {
       "Continue to cook, stirring frequently, until everything is heated through.",
       "Serve hot and enjoy!"
     ],
-    "skills_required": ["Chopping", "Stirring", "Frying"]
+    "skillsRequired": ["Chopping", "Stirring", "Frying"]
   }
 const PromptConstraint = {
     json_markers: "Do not wrap the json codes in JSON markers.",

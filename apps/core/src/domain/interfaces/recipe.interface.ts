@@ -6,12 +6,11 @@ interface Ingredient {
 }
 
 interface IRecipe {
-    id: string;
     name: string;
     ingredients: Ingredient[];
     origin: string;
-    steps_to_produce: string[];
-    recipeSkills: string[];
+    stepsToProduce: string[];
+    skillsRequired: string[];
 }
 
 export {
