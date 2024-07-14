@@ -26,4 +26,5 @@ export class RecipeGeneratorDto {
         isArray: true
     })
     ingredients: Ingredient[];
+    origin: string;
 }

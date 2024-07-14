@@ -1,6 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { RecipeGeneratorDto } from './dto/recipe_generator.dto';
 import { RecipeProcessorService } from '@core/application/services/recipe_processor.service';
+import { IRecipe } from '@core/domain/interfaces/recipe.interface';
 
 @Controller('recipe-generator')
 export class RecipeGeneratorController {
@@ -8,7 +9,7 @@ export class RecipeGeneratorController {
         private readonly RecipeProcessorService: RecipeProcessorService
     ) {}
     @Post()
-    async RecipeGeneratorController(@Body() userIngredients: RecipeGeneratorDto): Promise<string> {
+    async RecipeGeneratorController(@Body() userIngredients: RecipeGeneratorDto): Promise<IRecipe> {
         const text = await this.RecipeProcessorService.processRecipe(userIngredients);
         return text;
     }

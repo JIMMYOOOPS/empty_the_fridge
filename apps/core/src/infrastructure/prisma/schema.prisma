@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,12 +8,51 @@ datasource db {
 }
 
 model Recipe {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  ingredients String[]
-  instructions String
-  directions  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                String            @id @default(cuid())
+  name              String
+  ingredients       RecipeIngredient[]
+  origin            String
+  steps_to_produce  String[]
+  recipeSkills      RecipeSkill[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Ingredient {
+  id                String            @id @default(cuid())
+  name              String
+  recipeIngredients RecipeIngredient[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model RecipeIngredient {
+  recipeId             String
+  ingredientId         String
+  quantity             String
+  processing_method    String?
+  quantity_measurement String?
+
+  recipe               Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient           Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([recipeId, ingredientId])
+}
+
+model Skill {
+  id            String        @id @default(cuid())
+  name          String
+  recipeSkills  RecipeSkill[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model RecipeSkill {
+  recipeId   String
+  skillId    String
+
+  recipe     Recipe @relation(fields: [recipeId], references: [id])
+  skill      Skill  @relation(fields: [skillId], references: [id])
+
+  @@id([recipeId, skillId])
 }

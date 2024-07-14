@@ -3,6 +3,8 @@ import { RecipeGeneratorController } from '@core/interface/recipe_generator/reci
 import { RecipeProcessorService } from '@core/application/services/recipe_processor.service';
 import { RecipeTransformationService } from '@core/domain/services/recipe_transformation.service';
 import { GenAIService } from '@core/infrastructure/external_services/gen_ai_service/gen_ai.service';
+import { RecipeRepository } from '@core/infrastructure/database/repository/recipe.repository';
+import { DatabaseService } from '@core/infrastructure/database/database.service';
 
 @Module({
     imports: [],
@@ -12,7 +14,8 @@ import { GenAIService } from '@core/infrastructure/external_services/gen_ai_serv
     providers: [
         RecipeProcessorService,
         RecipeTransformationService,
-        GenAIService
+        GenAIService,
+        RecipeRepository,
     ],
     exports: []
 })

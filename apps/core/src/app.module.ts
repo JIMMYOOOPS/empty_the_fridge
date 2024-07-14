@@ -4,9 +4,13 @@ import { DatabaseModule } from './infrastructure/database/database.module';
 import { ExternalServicesModule } from './infrastructure/external_services/external_services.module';
 import { RecipeModule } from './modules/recipe.module';
 import { RecipeGeneratorModule } from './modules/recipe-generator.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     DatabaseModule,
     ExternalServicesModule,
     RecipeModule,
