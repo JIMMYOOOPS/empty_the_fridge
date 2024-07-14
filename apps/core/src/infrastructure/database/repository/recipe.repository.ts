@@ -77,8 +77,8 @@ export class RecipeRepository implements IRecipeEntity {
         ingredients: {
           create: updatedRecipe.ingredients.map((ingredient) => ({
             quantity: ingredient.quantity,
-            processing_method: ingredient.processing_method,
-            quantity_measurement: ingredient.quantity_measurement,
+            processingMethod: ingredient.processingMethod,
+            quantityMeasurement: ingredient.quantityMeasurement,
             ingredient: {
               connect: {
                 id: ingredient.ingredientId,

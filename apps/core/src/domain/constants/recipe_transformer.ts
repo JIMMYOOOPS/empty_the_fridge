@@ -1,16 +1,16 @@
 const TargetAudience = "cooking beginner"
-const RecipeJSONProperty = ['name', 'ingredients', 'origin', 'calories', 'steps to produce' , 'skills required']
+const RecipeJSONProperty = ['name', 'ingredients', 'origin', 'calories', 'stepsToProduce' , 'skillsRequired']
 const RecipeJSONPropertyExample = {
     "name": "Chicken and Egg Fried Rice",
     "ingredients": [
-      {"name": "chicken", "quantity": "200", "quantity_measurement": "g", "part": "thigh", "processing_method": "diced"},
-      {"name": "rice", "quantity": "250", "quantity_measurement": "g", "processing_method": "cooked"},
-      {"name": "cabbage", "quantity": "100", "quantity_measurement": "g", "processing_method": "shredded"},
-      {"name": "eggs", "quantity": "2", "processing_method": "beaten"},
-      {"name": "onion", "quantity": "1", "quantity_measurement": "g", "processing_method": "chopped"},
-      {"name": "salt", "quantity": "10g", "quantity_measurement": "g"},
-      {"name": "pepper", "quantity": "5g", "quantity_measurement": "g"},
-      {"name": "soy sauce", "quantity": "10g", "quantity_measurement": "g"},
+      {"name": "chicken", "quantity": "200", "quantityMeasurement": "g", "part": "thigh", "processingMethod": "diced"},
+      {"name": "rice", "quantity": "250", "quantityMeasurement": "g", "processingMethod": "cooked"},
+      {"name": "cabbage", "quantity": "100", "quantityMeasurement": "g", "processingMethod": "shredded"},
+      {"name": "eggs", "quantity": "2", "processingMethod": "beaten"},
+      {"name": "onion", "quantity": "1", "quantityMeasurement": "g", "processingMethod": "chopped"},
+      {"name": "salt", "quantity": "10g", "quantityMeasurement": "g"},
+      {"name": "pepper", "quantity": "5g", "quantityMeasurement": "g"},
+      {"name": "soy sauce", "quantity": "10g", "quantityMeasurement": "g"},
     ],
     "origin": "Asian",
     "calories": "400",
@@ -27,9 +27,9 @@ const RecipeJSONPropertyExample = {
     "skillsRequired": ["Chopping", "Stirring", "Frying"]
   }
 const PromptConstraint = {
-    json_markers: "Do not wrap the json codes in JSON markers.",
+    jsonMarkers: "Do not wrap the json codes in JSON markers.",
     quantity: "The quantity of each ingredient should be in  International System of Units, for example g, cm and etc. The quantity field should not use tablespoon(tbsp) or cup as a unit of measurement.",
-    empty_fields: "Do not leave any json fields empty such as: null, N/A or simply empty. If the information is not available in the json object, please remove the field."
+    emptyFields: "Do not leave any json fields empty such as: null, N/A or simply empty. If the information is not available in the json object, please remove the field."
 }
 
 export {

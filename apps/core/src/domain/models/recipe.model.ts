@@ -2,8 +2,8 @@ class RecipeIngredient {
   recipeId: string;
   ingredientId: string;
   quantity: string;
-  processing_method?: string;
-  quantity_measurement?: string;
+  processingMethod?: string;
+  quantityMeasurement?: string;
 }
 
 class RecipeSkill {

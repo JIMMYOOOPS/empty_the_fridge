@@ -1,8 +1,8 @@
 interface Ingredient {
     name: string;
     quantity: string;
-    quantity_measurement?: string;
-    processing_method?: string;
+    quantityMeasurement?: string;
+    processingMethod?: string;
 }
 
 interface IRecipe {
