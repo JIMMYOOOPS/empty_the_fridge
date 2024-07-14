@@ -44,5 +44,5 @@ function generateRecipeResponseExamplePrompt(): string {
 }
 
 function generatePromptConstraint(): string {
-    return `Please note that ${PromptConstraint.json_markers} ${PromptConstraint.empty_fields} ${PromptConstraint.quantity}`
+    return `Please note that ${PromptConstraint.jsonMarkers} ${PromptConstraint.emptyFields} ${PromptConstraint.quantity}`
 }
