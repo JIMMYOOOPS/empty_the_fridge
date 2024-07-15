@@ -1,5 +1,6 @@
 interface Ingredient {
     name: string;
+    type: string;
     quantity: string;
     quantityMeasurement?: string;
     processingMethod?: string;

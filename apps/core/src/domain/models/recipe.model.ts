@@ -1,6 +1,7 @@
 class RecipeIngredient {
   recipeId: string;
   ingredientId: string;
+  type: string;
   quantity: string;
   processingMethod?: string;
   quantityMeasurement?: string;

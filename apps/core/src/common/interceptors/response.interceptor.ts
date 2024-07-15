@@ -5,6 +5,14 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
-    return next.handle().pipe(map(data => ({ data })));
+    const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
+
+    return next.handle().pipe(map(data => ({ 
+        data,
+        timestamp: new Date().toISOString(), 
+        path: request.url,
+        status: response.statusCode,
+    })));
   }
 }

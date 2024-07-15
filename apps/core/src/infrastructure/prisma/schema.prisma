@@ -8,51 +8,50 @@ datasource db {
 }
 
 model Recipe {
-  id                String            @id @default(cuid())
-  name              String            @unique
-  ingredients       RecipeIngredient[]
-  origin            String
-  stepsToProduce  String[]
-  skillsRequired      RecipeSkill[]
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id             String             @id @default(cuid())
+  name           String             @unique
+  origin         String
+  stepsToProduce String[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  ingredients    RecipeIngredient[]
+  skillsRequired RecipeSkill[]
 }
 
 model Ingredient {
-  id                String            @id @default(cuid())
+  id                String             @id @default(cuid())
   name              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  type              String?            @db.VarChar(255)
   recipeIngredients RecipeIngredient[]
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
 }
 
 model RecipeIngredient {
-  recipeId             String
-  ingredientId         String
-  quantity             String
+  recipeId            String
+  ingredientId        String
+  quantity            String
   processingMethod    String?
   quantityMeasurement String?
-
-  recipe               Recipe     @relation(fields: [recipeId], references: [id])
-  ingredient           Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredient          Ingredient @relation(fields: [ingredientId], references: [id])
+  recipe              Recipe     @relation(fields: [recipeId], references: [id])
 
   @@id([recipeId, ingredientId])
 }
 
 model Skill {
-  id            String        @id @default(cuid())
-  name          String
-  recipeSkills  RecipeSkill[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  recipeSkills RecipeSkill[]
 }
 
 model RecipeSkill {
-  recipeId   String
-  skillId    String
-
-  recipe     Recipe @relation(fields: [recipeId], references: [id])
-  skill      Skill  @relation(fields: [skillId], references: [id])
+  recipeId String
+  skillId  String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  skill    Skill  @relation(fields: [skillId], references: [id])
 
   @@id([recipeId, skillId])
 }
