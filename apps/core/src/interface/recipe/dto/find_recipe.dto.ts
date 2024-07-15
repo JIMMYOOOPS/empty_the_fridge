@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsInt, Min } from 'class-validator';
-import { PanginatorDto } from '@core/shared/interface/paginator.interface';
+import { IPaginatorDto } from '@core/shared/interface/paginator.interface';
 
-export class FindAllRecipeDto implements PanginatorDto{
+export class FindAllRecipeDto implements IPaginatorDto {
     @ApiProperty({ required: false, default: 1 })
     @Transform(({ value }) => parseInt(value, 10))
     @IsInt()

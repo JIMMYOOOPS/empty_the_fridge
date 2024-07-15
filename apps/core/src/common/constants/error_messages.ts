@@ -10,6 +10,7 @@ export namespace ErrorType {
     export enum Recipe {
       NameAlreadyExists = "Recipe_NameAlreadyExists",
       TransformRecipeFailed = "Recipe_TransformRecipeFailed",
+      NotFound = "Recipe_NotFound",
     }
   }
 
@@ -21,4 +22,5 @@ export const ErrorMessages = {
     // Recipe errors
     [ErrorType.Recipe.NameAlreadyExists]: "Recipe name already exists.",
     [ErrorType.Recipe.TransformRecipeFailed]: "Failed to transform the recipe.",
+    [ErrorType.Recipe.NotFound]: "Recipe not found.",
   };

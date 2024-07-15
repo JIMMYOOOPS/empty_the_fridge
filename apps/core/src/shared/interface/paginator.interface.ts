@@ -34,7 +34,7 @@ export class Paginator {
   readonly hasPrevPage: boolean
 }
 
-export interface PanginatorDto {
+export interface IPaginatorDto {
     page: number
     size: number
 }

@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { DatabaseService } from '../database.service';
 import { IRecipeEntity } from '@core/domain/interfaces/recipe_entity.interface';
 import { IRecipe } from '@core/domain/interfaces/recipe.interface';
-import { Recipe } from '@core/domain/models/recipe.model';
+import { Recipe, RestructuredRecipe, JoinedRecipe } from '@core/domain/models/recipe.model';
 import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { ErrorMessages, ErrorType } from '@core/common/constants/error_messages';
 
@@ -82,8 +82,7 @@ export class RecipeRepository implements IRecipeEntity {
     size?: number;
     page?: number;
   } = {
-  }): Promise<any>
-  // Promise<PaginationResult<Recipe>> 
+  }): Promise<PaginationResult<RestructuredRecipe>> 
   {
     try {
       const { size = 10, page = 1 } = options
@@ -92,17 +91,63 @@ export class RecipeRepository implements IRecipeEntity {
           orderBy: {
             createdAt: 'desc',
           },
-          include: undefined
+          include: {
+            ingredients: {
+              include: {
+                ingredient: true, // Include the details of each ingredient
+              },
+            },
+            skillsRequired: {
+              include: {
+                skill: true, // Include the details of each skill
+              },
+            },
+          },
         },
         {
           size,
           page,
         },
       );
+
+      // Restructure the recipe object to include the ingredient and skill details
+      const restructuredRecipe = result.data.map((recipe) => this.restructureRecipe(recipe));
   
-      return result;
+      return {
+        data: restructuredRecipe,
+        pagination: result.pagination
+      }
     } catch (error) {
       this.logger.error(`Failed to paginate recipe: ${error}`);
+      throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async findRecipeById(id: string): Promise<Recipe> {
+    try {
+      const result = await this.databaseService.prisma.recipe.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          ingredients: {
+            include: {
+              ingredient: true,
+            },
+          },
+          skillsRequired: {
+            include: {
+              skill: true,
+            },
+          },
+        },
+      });
+      if (!result) {
+        throw new HttpException(ErrorMessages[ErrorType.Recipe.NotFound], HttpStatus.NOT_FOUND);
+      }
+      return result;
+    } catch (error) {
+      this.logger.error(`Failed to find recipe by id: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -187,5 +232,29 @@ export class RecipeRepository implements IRecipeEntity {
       },
     });
   }
-  // Implement other methods (findById, create, update, delete) similarly
+
+  restructureRecipe(recipe: JoinedRecipe): RestructuredRecipe {
+    const result = {
+      ...recipe,
+      ingredients: recipe.ingredients.map((ingredient) => ({
+        recipeId: ingredient.recipeId,
+        ingredientId: ingredient.ingredientId,
+        quantity: ingredient.quantity,
+        quantityMeasurement: ingredient.quantityMeasurement,
+        processingMethod: ingredient.processingMethod,
+        name: ingredient.ingredient.name,
+        type: ingredient.ingredient.type,
+        createdAt: ingredient.ingredient.createdAt,
+        updatedAt: ingredient.ingredient.updatedAt,
+      })),
+      skillsRequired: recipe.skillsRequired.map((skill) => ({
+        recipeId: skill.recipeId,
+        skillId: skill.skillId,
+        name: skill.skill.name,
+        createdAt: skill.skill.createdAt,
+        updatedAt: skill.skill.updatedAt,
+      })),
+    };
+    return result;
+  }
 }

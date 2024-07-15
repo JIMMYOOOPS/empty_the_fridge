@@ -14,5 +14,9 @@ export class RecipeService {
     return this.recipeRepository.paginateRecipe(options);
   }
 
+  async findById(id: string): Promise<Recipe> {
+    return this.recipeRepository.findRecipeById(id);
+  }
+
   // Add other methods (findById, create, update, delete) similarly
 }
