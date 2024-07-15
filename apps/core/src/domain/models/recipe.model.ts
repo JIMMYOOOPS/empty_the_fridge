@@ -12,11 +12,17 @@ class RecipeSkill {
   skillId: string;
 }
 
-export class Recipe {
-  id: string;
+class Recipe {
   name: string;
-  ingredients: RecipeIngredient[];
   origin: string;
-  steps_to_produce: string[];
-  recipeSkills: RecipeSkill[];
+  stepsToProduce: string[];
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export {
+  RecipeIngredient,
+  RecipeSkill,
+  Recipe
 }

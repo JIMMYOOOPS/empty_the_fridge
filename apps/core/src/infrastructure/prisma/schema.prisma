@@ -20,10 +20,10 @@ model Recipe {
 
 model Ingredient {
   id                String             @id @default(cuid())
-  name              String
+  name              String             @unique
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  type              String?            @db.VarChar(255)
+  type              String            @db.VarChar(255)
   recipeIngredients RecipeIngredient[]
 }
 
@@ -41,7 +41,7 @@ model RecipeIngredient {
 
 model Skill {
   id           String        @id @default(cuid())
-  name         String
+  name         String        @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   recipeSkills RecipeSkill[]
