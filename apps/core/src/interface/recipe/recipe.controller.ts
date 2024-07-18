@@ -1,10 +1,11 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { RecipeService } from '../../application/services/recipe.service';
-import { FindAllRecipeDto } from './dto/find_recipe.dto';
-import { Recipe } from '@core/domain/models/recipe.model';
-import { FindRecipeResponseDto } from './dto/find_recipe.response.dto';
-import { PaginationResult } from '@core/shared/interface/paginator.interface';
+import { Controller, Get, Query, Param } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
+import { PaginationResult } from '@core/shared/interface/paginator.interface';
+import { RecipeService } from '../../application/services/recipe.service';
+import { Recipe } from '@core/domain/models/recipe.model';
+import { FindAllRecipeDto } from './dto/find_recipe.dto';
+import { FindRecipeResponseDto } from './dto/find_recipe.response.dto';
+import { FindByIdRecipeResponseDto } from './dto/find_by_Id_recipe.response.dto';
 
 @Controller('recipes')
 export class RecipeController {
@@ -18,18 +19,25 @@ export class RecipeController {
   async findAll(
     @Query() params: FindAllRecipeDto,
   ): Promise<PaginationResult<Recipe>> {
-    const { page, size } = params;
+    const { page, size, name } = params;
     const options = {
       page,
       size,
+      filter: {
+        name,
+      }
     };
     return this.recipeService.findRecipe(options);
   }
 
-  // @ApiResponse({
-  //   description: 'The recipe with the given ID',
-  //   type: Recipe,
-  // })
+  @ApiResponse({
+    description: 'The recipe with the given ID',
+    type: FindByIdRecipeResponseDto,
+  })
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<Recipe> {
+    return this.recipeService.findById(id);
+  }
 
   // Add other endpoints (GET by ID, POST, PUT, DELETE) similarly
 }

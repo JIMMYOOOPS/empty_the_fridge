@@ -5,6 +5,7 @@ import { IRecipe } from '@core/domain/interfaces/recipe.interface';
 import { Recipe, RestructuredRecipe, JoinedRecipe } from '@core/domain/models/recipe.model';
 import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { ErrorMessages, ErrorType } from '@core/common/constants/error_messages';
+import { RecipeFilter } from '@core/infrastructure/common/interface/recipe_filter.interface';
 
 @Injectable()
 export class RecipeRepository implements IRecipeEntity {
@@ -81,11 +82,16 @@ export class RecipeRepository implements IRecipeEntity {
   async paginateRecipe(options: {
     size?: number;
     page?: number;
+    filter?: Record<string, any>
   } = {
   }): Promise<PaginationResult<RestructuredRecipe>> 
   {
     try {
-      const { size = 10, page = 1 } = options
+      const { size = 10, page = 1, filter } = options;
+
+      const recipeFilter = new RecipeFilter();
+      filter?.name && recipeFilter.byName(filter.name);
+      const conditions = recipeFilter.getConditions();
       const result = await this.databaseService.prisma.recipe.paginate(
         {
           orderBy: {
@@ -103,6 +109,11 @@ export class RecipeRepository implements IRecipeEntity {
               },
             },
           },
+          where: {
+            AND: [
+              ...conditions,
+            ]
+          }
         },
         {
           size,
@@ -123,7 +134,7 @@ export class RecipeRepository implements IRecipeEntity {
     }
   }
 
-  async findRecipeById(id: string): Promise<Recipe> {
+  async findRecipeById(id: string): Promise<RestructuredRecipe> {
     try {
       const result = await this.databaseService.prisma.recipe.findUnique({
         where: {
@@ -145,7 +156,8 @@ export class RecipeRepository implements IRecipeEntity {
       if (!result) {
         throw new HttpException(ErrorMessages[ErrorType.Recipe.NotFound], HttpStatus.NOT_FOUND);
       }
-      return result;
+      const restructuredRecipe = this.restructureRecipe(result);
+      return restructuredRecipe;
     } catch (error) {
       this.logger.error(`Failed to find recipe by id: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);

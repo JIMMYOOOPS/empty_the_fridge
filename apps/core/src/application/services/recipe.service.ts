@@ -10,6 +10,7 @@ export class RecipeService {
   async findRecipe(options: {
     size?: number;
     page?: number;
+    filter: Record<string, any>;
   }): Promise<PaginationResult<Recipe>> {
     return this.recipeRepository.paginateRecipe(options);
   }

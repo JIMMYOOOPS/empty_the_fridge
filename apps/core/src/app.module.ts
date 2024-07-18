@@ -1,10 +1,11 @@
-import { All, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { ExternalServicesModule } from './infrastructure/external_services/external_services.module';
 import { RecipeModule } from './modules/recipe.module';
 import { RecipeGeneratorModule } from './modules/recipe-generator.module';
-import { ConfigModule } from '@nestjs/config';
+import { IngredientModule } from './modules/ingredient.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/filters/exception.filter';
@@ -17,7 +18,8 @@ import { AllExceptionsFilter } from './common/filters/exception.filter';
     DatabaseModule,
     ExternalServicesModule,
     RecipeModule,
-    RecipeGeneratorModule
+    RecipeGeneratorModule,
+    IngredientModule
   ],
   controllers: [AppController],
   providers: [

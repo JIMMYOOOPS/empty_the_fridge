@@ -1,3 +1,5 @@
+import { Ingredient } from './ingredient.model';
+
 class RecipeIngredient {
   recipeId: string;
   ingredientId: string;
@@ -18,14 +20,6 @@ class Recipe {
   origin: string;
   stepsToProduce: string[];
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-class Ingredient {
-  id: string;
-  name: string;
-  type: string;
   createdAt: Date;
   updatedAt: Date;
 }
