@@ -24,17 +24,14 @@ export class IngredientRepository implements IIngredientEntity {
             const ingredientFilter = new IngredientFilter();
             filter?.name && ingredientFilter.byName(filter.name);
             const conditions = ingredientFilter.getConditions();
+            const where  = conditions.length > 0 ? { AND: conditions } : {};
             const result = await this.databaseService.prisma.ingredient.paginate(
               {
                 orderBy: {
                   createdAt: 'desc',
                 },
                 include: undefined,
-                where: {
-                  AND: [
-                    ...conditions,
-                  ]
-                }
+                ...where
               },
               {
                 size,

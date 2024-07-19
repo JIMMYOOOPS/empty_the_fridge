@@ -27,8 +27,8 @@ export class RecipeRepository implements IRecipeEntity {
       }
       // retrieve or create the ingredient Id from the database
       const ingredientNames = ingredients.map((ingredient) => ingredient.name);
-      const ingredientFromDB = await this.processIngredients(ingredientNames, ingredients);
-      const skillsFromDB = await this.processSkills(skillsRequired);
+      const ingredientFromDB = await this.processIngredientsForCreate(ingredientNames, ingredients);
+      const skillsFromDB = await this.processSkillsForCreate(skillsRequired);
 
       const updatedRecipe = {
         name,
@@ -92,6 +92,9 @@ export class RecipeRepository implements IRecipeEntity {
       const recipeFilter = new RecipeFilter();
       filter?.name && recipeFilter.byName(filter.name);
       const conditions = recipeFilter.getConditions();
+      const where  = conditions.length > 0 ? { where : {
+        AND: conditions
+      }} : {};
       const result = await this.databaseService.prisma.recipe.paginate(
         {
           orderBy: {
@@ -109,11 +112,7 @@ export class RecipeRepository implements IRecipeEntity {
               },
             },
           },
-          where: {
-            AND: [
-              ...conditions,
-            ]
-          }
+          ...where
         },
         {
           size,
@@ -164,7 +163,7 @@ export class RecipeRepository implements IRecipeEntity {
     }
   }
 
-  async processIngredients(ingredientNames: string[], ingredients: any[]) {
+  async processIngredientsForCreate(ingredientNames: string[], ingredients: any[]) {
     // Fetch all ingredients at once
     const existingIngredients = await this.databaseService.prisma.ingredient.findMany({
       where: {
@@ -216,7 +215,7 @@ export class RecipeRepository implements IRecipeEntity {
     });
   }
 
-  async processSkills(skills: string[]) {
+  async processSkillsForCreate(skills: string[]) {
     // Fetch all skills at once
     const existingSkills = await this.databaseService.prisma.skill.findMany({
       where: {
