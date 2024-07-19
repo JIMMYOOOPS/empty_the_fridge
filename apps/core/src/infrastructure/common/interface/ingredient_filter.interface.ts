@@ -3,19 +3,22 @@ import { QueryConstants } from '../constants/query.constants';
 
 interface IIngredientFilter {
     name: string;
-    ingredients: string;
+    type: string;
   }
   
 class IngredientFilter extends GenericFilter<IIngredientFilter> {
     name: string;
-    ingredients: string;
-    constructor(name?: string, ingredients?: string) {
+    type: string;
+    constructor(name?: string, type?: string) {
         super();
         this.name = name;
-        this.ingredients = ingredients;
+        this.type = type;
     }
     byName(name: string): this {
       return this.addCondition('name', name, QueryConstants.CONTAIN);
+    }
+    byType(type: string): this {
+      return this.addCondition('type', type, QueryConstants.EQUAL);
     }
 }
 

@@ -1,5 +1,5 @@
 import { Controller, Get, Query, Param } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { RecipeService } from '../../application/services/recipe.service';
 import { Recipe } from '@core/domain/models/recipe.model';
@@ -7,6 +7,7 @@ import { FindAllRecipeDto } from './dto/find_recipe.dto';
 import { FindRecipeResponseDto } from './dto/find_recipe.response.dto';
 import { FindByIdRecipeResponseDto } from './dto/find_by_Id_recipe.response.dto';
 
+@ApiTags('Recipes')
 @Controller('recipes')
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}

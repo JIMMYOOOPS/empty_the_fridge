@@ -13,6 +13,10 @@ export namespace ErrorType {
       NotFound = "Recipe_NotFound",
       InvalidRecipeFromGenAI = "Recipe_InvalidRecipeFromGenAI",
     }
+
+    export enum Ingredient {
+      NotFound = "Ingredient_NotFound",
+    }
   }
 
 export const ErrorMessages = {
@@ -25,4 +29,6 @@ export const ErrorMessages = {
     [ErrorType.Recipe.TransformRecipeFailed]: "Failed to transform the recipe.",
     [ErrorType.Recipe.NotFound]: "Recipe not found.",
     [ErrorType.Recipe.InvalidRecipeFromGenAI]: "Invalid recipe from GenAI.",
+    // Ingredient errors
+    [ErrorType.Ingredient.NotFound]: "Ingredient not found.",
   };

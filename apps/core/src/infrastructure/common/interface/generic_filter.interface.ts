@@ -12,7 +12,7 @@ export class GenericFilter<T> implements IBaseFilter {
     }
   
     addCondition(key: keyof T, value: any, conditionType: string): this {
-      if (conditionType === QueryConstants.CONTAIN) {
+      if (conditionType === QueryConstants.CONTAIN || conditionType === QueryConstants.EQUAL) {
         this.where[key] = {
           contains: value,
           mode: QueryConstants.INSENSITIVE, // case-insensitive

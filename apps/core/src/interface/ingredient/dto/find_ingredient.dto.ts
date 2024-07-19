@@ -22,4 +22,9 @@ export class FindAllIngredientDto implements IPaginatorDto {
     @IsOptional()
     @IsString()
     name?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    type?: string;
   }

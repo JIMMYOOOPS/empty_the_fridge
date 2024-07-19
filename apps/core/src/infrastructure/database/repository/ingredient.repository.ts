@@ -23,8 +23,13 @@ export class IngredientRepository implements IIngredientEntity {
       
             const ingredientFilter = new IngredientFilter();
             filter?.name && ingredientFilter.byName(filter.name);
+            filter?.type && ingredientFilter.byType(filter.type);
             const conditions = ingredientFilter.getConditions();
-            const where  = conditions.length > 0 ? { AND: conditions } : {};
+            
+            const where  = conditions.length > 0 ? { where: {
+              AND: conditions
+            } } : {};
+            
             const result = await this.databaseService.prisma.ingredient.paginate(
               {
                 orderBy: {
@@ -47,5 +52,19 @@ export class IngredientRepository implements IIngredientEntity {
             this.logger.error(`Failed to paginate recipe: ${error}`);
             throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
           }
+    }
+
+    async findById(id: string): Promise<Ingredient> {
+      try {
+        const ingredient = await this.databaseService.prisma.ingredient.findUnique({
+          where: {
+            id,
+          },
+        });
+        return ingredient;
+      } catch (error) {
+        this.logger.error(`Failed to find ingredient by id: ${error}`);
+        throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
 }
