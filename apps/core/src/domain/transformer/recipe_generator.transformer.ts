@@ -11,7 +11,7 @@ export function promptRecipeGeneratorTransformer(userIngredients: IUserIngredien
     // Generate prompts
     const targetAudiencePrompt = generateTargetAudiencePrompt();
     const ingredientPrompt = generateIngredientPrompt(ingredients);
-    const originPrompt = generateOriginPrompt(userIngredients.origin);
+    const originPrompt = userIngredients.origin ? generateOriginPrompt(userIngredients.origin) : '';
     const recipeResponseFormatPrompt = generateRecipeResponseFormatPrompt();
     const recipeResponseExamplePrompt = generateRecipeResponseExamplePrompt();
     const constraint = generatePromptConstraint();
@@ -36,7 +36,7 @@ function generateOriginPrompt(origin: string): string {
 }
 
 function generateRecipeResponseFormatPrompt(): string {
-    return `Please format the recipe response as if it were JSON, including the following properties: ${RecipeJSONProperty.join(', ')}.`
+    return `Format the recipe response as if it were JSON, including the following properties: ${RecipeJSONProperty.join(', ')}.`
 }
 
 function generateRecipeResponseExamplePrompt(): string {
@@ -44,5 +44,5 @@ function generateRecipeResponseExamplePrompt(): string {
 }
 
 function generatePromptConstraint(): string {
-    return `Please note that ${PromptConstraint.jsonMarkers} ${PromptConstraint.emptyFields} ${PromptConstraint.quantity}`
+    return `Please note the following constraints: ${PromptConstraint.jsonMarkers} ${PromptConstraint.emptyFields} ${PromptConstraint.quantityMeasurement}`
 }

@@ -74,6 +74,9 @@ export class RecipeRepository implements IRecipeEntity {
       });
       return result;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       this.logger.error(`Failed to create recipe: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -158,6 +161,9 @@ export class RecipeRepository implements IRecipeEntity {
       const restructuredRecipe = this.restructureRecipe(result);
       return restructuredRecipe;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       this.logger.error(`Failed to find recipe by id: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
     }

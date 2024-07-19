@@ -5,6 +5,9 @@ import { GenAIService } from "@core/infrastructure/external_services/gen_ai_serv
 import { IRecipe } from "@core/domain/interfaces/recipe.interface";
 import { Logger } from "@nestjs/common";
 import { ErrorType, ErrorMessages } from "@core/common/constants/error_messages";
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
+import { RecipeDto } from "../dto/recipe.dto";
 
 @Injectable()
 export class RecipeTransformationService {
@@ -17,12 +20,26 @@ export class RecipeTransformationService {
             const prompt = promptRecipeGeneratorTransformer(userIngredients);
             const transformedRecipe = await this.genAIService.generateText(prompt);
             const recipe: IRecipe = JSON.parse(transformedRecipe);
+            if (!await this.validateRecipe(recipe)) {
+                throw new HttpException(ErrorMessages[ErrorType.Recipe.InvalidRecipeFromGenAI], HttpStatus.BAD_REQUEST);
+            }
             this.logger.log(`Recipe: ${JSON.stringify(recipe)}`);
             return recipe;
         } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
             this.logger.error(`Failed to transform the recipe: ${error}`);
             throw new HttpException(ErrorMessages[ErrorType.Recipe.TransformRecipeFailed], HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    async validateRecipe(recipe: IRecipe): Promise<boolean> {
+        // Validate if recipe is coherent with IRecipe
+        const recipeObj = plainToClass(RecipeDto, recipe);
+        // Returns array of errors if any
+        const errors = await validate(recipeObj);
+        this.logger.log(`Recipe validation errors: ${JSON.stringify(errors, null, 2)}`);
+        return errors.length === 0;
     }
 }

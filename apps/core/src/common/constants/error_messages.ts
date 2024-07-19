@@ -11,6 +11,7 @@ export namespace ErrorType {
       NameAlreadyExists = "Recipe_NameAlreadyExists",
       TransformRecipeFailed = "Recipe_TransformRecipeFailed",
       NotFound = "Recipe_NotFound",
+      InvalidRecipeFromGenAI = "Recipe_InvalidRecipeFromGenAI",
     }
   }
 
@@ -23,4 +24,5 @@ export const ErrorMessages = {
     [ErrorType.Recipe.NameAlreadyExists]: "Recipe name already exists.",
     [ErrorType.Recipe.TransformRecipeFailed]: "Failed to transform the recipe.",
     [ErrorType.Recipe.NotFound]: "Recipe not found.",
+    [ErrorType.Recipe.InvalidRecipeFromGenAI]: "Invalid recipe from GenAI.",
   };

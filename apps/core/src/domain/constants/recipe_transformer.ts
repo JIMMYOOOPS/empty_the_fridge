@@ -28,8 +28,8 @@ const RecipeJSONPropertyExample = {
   }
 const PromptConstraint = {
     jsonMarkers: "Do not wrap the json codes in JSON markers.",
-    quantity: "The quantity of each ingredient should be in  International System of Units, for example g, cm and etc. The quantity field should not use tablespoon(tbsp) or cup as a unit of measurement.",
-    emptyFields: "Do not leave any json fields empty such as: null, N/A or simply empty. If the information is not available in the json object, please remove the field."
+    quantityMeasurement: "The quantityMeasurement field must not use 'tablespoon, 'tbsp, 'tsp, or 'cup' as quantity measurement. The quantityMeasurement field should be in International System of Units.",
+    emptyFields: "All json fields should contain values. If no information is not available in the field remove the field."
 }
 
 export {
