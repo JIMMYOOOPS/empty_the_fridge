@@ -6,17 +6,19 @@ import { Recipe, RestructuredRecipe, JoinedRecipe } from '@core/domain/models/re
 import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { ErrorMessages, ErrorType } from '@core/common/constants/error_messages';
 import { RecipeFilter } from '@core/infrastructure/common/interface/recipe_filter.interface';
+import { IngredientRepository } from './ingredient.repository';
 
 @Injectable()
 export class RecipeRepository implements IRecipeEntity {
   private readonly logger = new Logger(RecipeRepository.name);
   constructor(
     private readonly databaseService: DatabaseService,
+    private readonly ingredientRepository: IngredientRepository
   ) {}
 
   async create(recipe: IRecipe): Promise<Recipe> {
     try {
-      const { name, ingredients, origin, stepsToProduce, skillsRequired } = recipe;      
+      const { name, ingredients, origin, calories, cookingTime, stepsToProduce, skillsRequired } = recipe;      
       const validateRecipeName = await this.databaseService.prisma.recipe.findFirst({
         where: {
           name,
@@ -33,6 +35,8 @@ export class RecipeRepository implements IRecipeEntity {
       const updatedRecipe = {
         name,
         origin,
+        calories,
+        cookingTime,
         stepsToProduce,
         ingredients: ingredients.map((ingredient, key) => ({
           ...ingredient,
@@ -49,6 +53,8 @@ export class RecipeRepository implements IRecipeEntity {
           name,
           origin,
           stepsToProduce,
+          calories,
+          cookingTime,
           ingredients: {
             create: updatedRecipe.ingredients.map((ingredient) => ({
               quantity: ingredient.quantity,
@@ -170,8 +176,8 @@ export class RecipeRepository implements IRecipeEntity {
   }
 
   async processIngredientsForCreate(ingredientNames: string[], ingredients: any[]) {
-    // Fetch all ingredients at once
-    const existingIngredients = await this.databaseService.prisma.ingredient.findMany({
+    // Fetch ingredients
+    const existingIngredients = await this.ingredientRepository.findManyByName({
       where: {
         name: {
           in: ingredientNames,
@@ -181,16 +187,13 @@ export class RecipeRepository implements IRecipeEntity {
   
     const existingIngredientNames = existingIngredients.map((ing) => ing.name);
     const ingredientsToCreate = ingredients.filter((ing) => !existingIngredientNames.includes(ing.name));
-    const ingredientsToUpdate = existingIngredients.filter((ing) => {
-      const currentIngredient = ingredients.find((ingredient) => ingredient.name === ing.name);
-      return Object.entries(ing).some(([key, value]) => value === null || value === undefined && currentIngredient[key] !== undefined);
-    });
+    const ingredientsToUpdate = existingIngredients.filter((ing) => 
+      ingredients.some((ingredient) => ingredient.name === ing.name)
+    );
   
     // Bulk insert new ingredients
     if (ingredientsToCreate.length > 0) {
-      await this.databaseService.prisma.ingredient.createMany({
-        data: ingredientsToCreate.map(({ name, type }) => ({ name, type })),
-      });
+      await this.ingredientRepository.createMany(ingredientsToCreate);
     }
   
     // Update existing ingredients if necessary
@@ -198,8 +201,11 @@ export class RecipeRepository implements IRecipeEntity {
       const updateData = {};
       const currentIngredient = ingredients.find((ing) => ing.name === ingredient.name);
       for (const [key, value] of Object.entries(ingredient)) {
-        if (value === null || value === undefined && currentIngredient[key] !== undefined) {
-          updateData[key] = currentIngredient[key];
+        // add recipeCount by 1
+        if (key === 'recipesCount') {
+          updateData[key] = ingredient[key] + 1;
+        } else if (value === null || value === undefined || value !== currentIngredient[key] && currentIngredient[key] !== undefined) {
+          updateData[key] = value ? value : currentIngredient[key];
         }
       }
   
@@ -212,7 +218,7 @@ export class RecipeRepository implements IRecipeEntity {
     }
   
     // Optionally, return the updated list of ingredients
-    return await this.databaseService.prisma.ingredient.findMany({
+    return await this.ingredientRepository.findManyByName({
       where: {
         name: {
           in: ingredientNames,

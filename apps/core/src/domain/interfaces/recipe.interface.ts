@@ -4,12 +4,15 @@ interface Ingredient {
     quantity: string;
     quantityMeasurement?: string;
     processingMethod?: string;
+    recipesCount?: number;
 }
 
 interface IRecipe {
     name: string;
     ingredients: Ingredient[];
     origin: string;
+    calories: number;
+    cookingTime: number;
     stepsToProduce: string[];
     skillsRequired: string[];
 }

@@ -19,12 +19,18 @@ export class RecipeTransformationService {
         try {
             const prompt = promptRecipeGeneratorTransformer(userIngredients);
             const transformedRecipe = await this.genAIService.generateText(prompt);
-            const recipe: IRecipe = JSON.parse(transformedRecipe);
-            if (!await this.validateRecipe(recipe)) {
+            const recipe = JSON.parse(transformedRecipe);
+            // calories and cookingTime are returned as string from AI
+            const updatedRecipe = {
+                ...recipe,
+                calories: parseInt(recipe.calories),
+                cookingTime: parseInt(recipe.cookingTime)
+            }
+            if (!await this.validateRecipe(updatedRecipe)) {
                 throw new HttpException(ErrorMessages[ErrorType.Recipe.InvalidRecipeFromGenAI], HttpStatus.BAD_REQUEST);
             }
-            this.logger.log(`Recipe: ${JSON.stringify(recipe)}`);
-            return recipe;
+            this.logger.log(`Recipe: ${JSON.stringify(updatedRecipe)}`);
+            return updatedRecipe;
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;

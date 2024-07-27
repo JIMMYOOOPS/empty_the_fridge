@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsString, IsArray, ValidateNested, IsNotEmpty, IsOptional } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
+import { IsString, IsArray, ValidateNested, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 class Ingredient {
     @IsString()    
@@ -41,6 +41,12 @@ class RecipeDto {
     @IsNotEmpty()
     @IsString({ each: true })
     skillsRequired: string[];
+
+    @IsNumber()
+    calories: number;
+
+    @IsNumber()
+    cookingTime: number;
 }
 
 export {

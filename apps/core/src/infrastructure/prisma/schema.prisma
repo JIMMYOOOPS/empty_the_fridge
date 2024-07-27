@@ -16,6 +16,8 @@ model Recipe {
   updatedAt      DateTime           @updatedAt
   ingredients    RecipeIngredient[]
   skillsRequired RecipeSkill[]
+  cookingTime    Int                @default(0)
+  calories       Int                @default(0)
 }
 
 model Ingredient {
@@ -23,8 +25,9 @@ model Ingredient {
   name              String             @unique
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  type              String            @db.VarChar(255)
+  type              String             @db.VarChar(255)
   recipeIngredients RecipeIngredient[]
+  recipesCount    Int                 @default(1)
 }
 
 model RecipeIngredient {

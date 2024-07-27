@@ -5,6 +5,7 @@ import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { ErrorMessages, ErrorType } from '@core/common/constants/error_messages';
 import { IngredientFilter } from '@core/infrastructure/common/interface/ingredient_filter.interface';
 import { Ingredient } from '@core/domain/models/ingredient.model';
+import { GetBatchResult } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class IngredientRepository implements IIngredientEntity {
@@ -64,6 +65,36 @@ export class IngredientRepository implements IIngredientEntity {
         return ingredient;
       } catch (error) {
         this.logger.error(`Failed to find ingredient by id: ${error}`);
+        throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    // Find Ingredients by name
+    async findManyByName(options: {
+      where: Record<string, any>;
+    }): Promise<Ingredient[]> {
+      try {
+        const { where } = options;
+        const ingredients = await this.databaseService.prisma.ingredient.findMany({
+          where,
+        });
+        return ingredients;
+      } catch (error) {
+        this.logger.error(`Failed to find ingredients: ${error}`);
+        throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    // Create many ingredients
+    async createMany(data: Ingredient[]): Promise<GetBatchResult> {
+      try {
+        const result = await this.databaseService.prisma.ingredient.createMany({
+          data: data.map(({ name, type }) => ({ name, type }))
+      });
+
+        return result;
+      } catch (error) {
+        this.logger.error(`Failed to create many ingredients: ${error}`);
         throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }

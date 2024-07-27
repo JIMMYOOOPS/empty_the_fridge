@@ -4,10 +4,10 @@ import { RecipeProcessorService } from '@core/application/services/recipe_proces
 import { RecipeTransformationService } from '@core/domain/services/recipe_transformation.service';
 import { GenAIService } from '@core/infrastructure/external_services/gen_ai_service/gen_ai.service';
 import { RecipeRepository } from '@core/infrastructure/database/repository/recipe.repository';
-import { DatabaseService } from '@core/infrastructure/database/database.service';
+import { IngredientModule } from './ingredient.module';
 
 @Module({
-    imports: [],
+    imports: [IngredientModule],
     controllers: [
         RecipeGeneratorController
     ],

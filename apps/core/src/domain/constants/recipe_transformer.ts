@@ -1,5 +1,5 @@
 const TargetAudience = "cooking beginner"
-const RecipeJSONProperty = ['name', 'ingredients', 'origin', 'calories', 'stepsToProduce' , 'skillsRequired']
+const RecipeJSONProperty = ['name', 'ingredients', 'origin', 'calories', 'stepsToProduce' , 'skillsRequired', 'cookingTime']
 const RecipeJSONPropertyExample = {
     "name": "Chicken and Egg Fried Rice",
     "ingredients": [
@@ -14,6 +14,7 @@ const RecipeJSONPropertyExample = {
     ],
     "origin": "Asian",
     "calories": "400",
+    "cookingTime": "30",
     "stepsToProduce": [
       "Heat a tablespoon of oil in a large pan or wok over medium-high heat.",
       "Add chopped onion and diced chicken. Cook until chicken is no longer pink.",
@@ -29,7 +30,10 @@ const RecipeJSONPropertyExample = {
 const PromptConstraint = {
     jsonMarkers: "Do not wrap the json codes in JSON markers.",
     quantityMeasurement: "The quantityMeasurement field must not use 'tablespoon, 'tbsp, 'tsp, or 'cup' as quantity measurement. The quantityMeasurement field should be in International System of Units.",
-    emptyFields: "All json fields should contain values. If no information is not available in the field remove the field."
+    emptyFields: "All json fields should contain values. If no information is not available in the field remove the field.",
+    lowerCase: "All json fields should be in lower case.",
+    ingredientSingularity: "The ingredient field should be singular."
+
 }
 
 export {
