@@ -5,6 +5,7 @@ import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { ErrorMessages, ErrorType } from '@core/common/constants/error_messages';
 import { IngredientFilter } from '@core/infrastructure/common/interface/ingredient_filter.interface';
 import { Ingredient } from '@core/domain/models/ingredient.model';
+import { Ingredient as IIngredient } from '@core/domain/interfaces/recipe.interface';
 import { GetBatchResult } from '@prisma/client/runtime/library';
 
 @Injectable()
@@ -70,13 +71,14 @@ export class IngredientRepository implements IIngredientEntity {
     }
 
     // Find Ingredients by name
-    async findManyByName(options: {
-      where: Record<string, any>;
-    }): Promise<Ingredient[]> {
+    async findManyByName(name: string[]): Promise<Ingredient[]> {
       try {
-        const { where } = options;
         const ingredients = await this.databaseService.prisma.ingredient.findMany({
-          where,
+          where: {
+            name: {
+              in: name,
+          },
+          }
         });
         return ingredients;
       } catch (error) {
@@ -86,7 +88,7 @@ export class IngredientRepository implements IIngredientEntity {
     }
 
     // Create many ingredients
-    async createMany(data: Ingredient[]): Promise<GetBatchResult> {
+    async createMany(data: IIngredient[]): Promise<GetBatchResult> {
       try {
         const result = await this.databaseService.prisma.ingredient.createMany({
           data: data.map(({ name, type }) => ({ name, type }))
@@ -95,6 +97,22 @@ export class IngredientRepository implements IIngredientEntity {
         return result;
       } catch (error) {
         this.logger.error(`Failed to create many ingredients: ${error}`);
+        throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    async update(data: Record<string, any>): Promise<Ingredient> {
+      try {
+        const { name } = data;
+        const ingredient = await this.databaseService.prisma.ingredient.update({
+          where: {
+            name,
+          },
+          data,
+        });
+        return ingredient;
+      } catch (error) {
+        this.logger.error(`Failed to update ingredient: ${error}`);
         throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }

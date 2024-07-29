@@ -30,7 +30,8 @@ class RecipeDto {
     ingredients: Ingredient[];
 
     @IsString()
-    origin: string;
+    @IsOptional()
+    origin?: string;
 
     @IsArray()
     @IsNotEmpty()

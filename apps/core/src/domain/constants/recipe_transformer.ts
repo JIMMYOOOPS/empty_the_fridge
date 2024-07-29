@@ -31,9 +31,8 @@ const PromptConstraint = {
     jsonMarkers: "Do not wrap the json codes in JSON markers.",
     quantityMeasurement: "The quantityMeasurement field must not use 'tablespoon, 'tbsp, 'tsp, or 'cup' as quantity measurement. The quantityMeasurement field should be in International System of Units.",
     emptyFields: "All json fields should contain values. If no information is not available in the field remove the field.",
-    lowerCase: "All json fields should be in lower case.",
+    lowerCase: "All json keys and value should be in lower case.",
     ingredientSingularity: "The ingredient field should be singular."
-
 }
 
 export {

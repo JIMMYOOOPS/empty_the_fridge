@@ -1,6 +1,5 @@
 import { IUserIngredients, IUserIngredient } from "@core/application/interface/user_ingredients.interface";
 import { TargetAudience, RecipeJSONProperty, RecipeJSONPropertyExample, PromptConstraint } from "@core/domain/constants/recipe_transformer";
-import { generate } from "rxjs";
 
 /**
  * Generate a prompt for the recipe generator transformer

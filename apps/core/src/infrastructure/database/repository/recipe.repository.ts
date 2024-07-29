@@ -6,17 +6,17 @@ import { Recipe, RestructuredRecipe, JoinedRecipe } from '@core/domain/models/re
 import { PaginationResult } from '@core/shared/interface/paginator.interface';
 import { ErrorMessages, ErrorType } from '@core/common/constants/error_messages';
 import { RecipeFilter } from '@core/infrastructure/common/interface/recipe_filter.interface';
-import { IngredientRepository } from './ingredient.repository';
+import { Ingredient } from '@core/domain/models/ingredient.model'
+import { Skill } from '@core/domain/models/skill.model'
 
 @Injectable()
 export class RecipeRepository implements IRecipeEntity {
   private readonly logger = new Logger(RecipeRepository.name);
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly ingredientRepository: IngredientRepository
   ) {}
 
-  async create(recipe: IRecipe): Promise<Recipe> {
+  async create(recipe: IRecipe, ingredientFromDB: Ingredient[], skillsFromDB: Skill[]): Promise<Recipe> {
     try {
       const { name, ingredients, origin, calories, cookingTime, stepsToProduce, skillsRequired } = recipe;      
       const validateRecipeName = await this.databaseService.prisma.recipe.findFirst({
@@ -27,10 +27,6 @@ export class RecipeRepository implements IRecipeEntity {
       if (validateRecipeName) {
         throw new HttpException(ErrorMessages[ErrorType.Recipe.NameAlreadyExists], HttpStatus.BAD_REQUEST);
       }
-      // retrieve or create the ingredient Id from the database
-      const ingredientNames = ingredients.map((ingredient) => ingredient.name);
-      const ingredientFromDB = await this.processIngredientsForCreate(ingredientNames, ingredients);
-      const skillsFromDB = await this.processSkillsForCreate(skillsRequired);
 
       const updatedRecipe = {
         name,
@@ -38,14 +34,20 @@ export class RecipeRepository implements IRecipeEntity {
         calories,
         cookingTime,
         stepsToProduce,
-        ingredients: ingredients.map((ingredient, key) => ({
-          ...ingredient,
-          ingredientId: ingredientFromDB[key].id,
-        })),
-        skillsRequired: skillsRequired.map((skill, index) => ({
-          skill,
-          skillId: skillsFromDB[index].id,
-        })),
+        ingredients: ingredients.map((ingredient) => {
+          const matchedIngredient = ingredientFromDB.find((ing) => ing.name === ingredient.name);
+          return {
+            ...ingredient,
+            ingredientId: matchedIngredient.id,
+          };
+        }),
+        skillsRequired: skillsRequired.map((skill) => {
+          const matchedSkill = skillsFromDB.find((sk) => sk.name === skill);
+          return {
+            ...matchedSkill,
+            skillId: matchedSkill.id,
+          };
+        }),
       };
   
       const result = await this.databaseService.prisma.recipe.create({
@@ -173,87 +175,6 @@ export class RecipeRepository implements IRecipeEntity {
       this.logger.error(`Failed to find recipe by id: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
     }
-  }
-
-  async processIngredientsForCreate(ingredientNames: string[], ingredients: any[]) {
-    // Fetch ingredients
-    const existingIngredients = await this.ingredientRepository.findManyByName({
-      where: {
-        name: {
-          in: ingredientNames,
-        },
-      },
-    });
-  
-    const existingIngredientNames = existingIngredients.map((ing) => ing.name);
-    const ingredientsToCreate = ingredients.filter((ing) => !existingIngredientNames.includes(ing.name));
-    const ingredientsToUpdate = existingIngredients.filter((ing) => 
-      ingredients.some((ingredient) => ingredient.name === ing.name)
-    );
-  
-    // Bulk insert new ingredients
-    if (ingredientsToCreate.length > 0) {
-      await this.ingredientRepository.createMany(ingredientsToCreate);
-    }
-  
-    // Update existing ingredients if necessary
-    for (const ingredient of ingredientsToUpdate) {
-      const updateData = {};
-      const currentIngredient = ingredients.find((ing) => ing.name === ingredient.name);
-      for (const [key, value] of Object.entries(ingredient)) {
-        // add recipeCount by 1
-        if (key === 'recipesCount') {
-          updateData[key] = ingredient[key] + 1;
-        } else if (value === null || value === undefined || value !== currentIngredient[key] && currentIngredient[key] !== undefined) {
-          updateData[key] = value ? value : currentIngredient[key];
-        }
-      }
-  
-      if (Object.keys(updateData).length > 0) {
-        await this.databaseService.prisma.ingredient.update({
-          where: { name: ingredient.name },
-          data: updateData,
-        });
-      }
-    }
-  
-    // Optionally, return the updated list of ingredients
-    return await this.ingredientRepository.findManyByName({
-      where: {
-        name: {
-          in: ingredientNames,
-        },
-      },
-    });
-  }
-
-  async processSkillsForCreate(skills: string[]) {
-    // Fetch all skills at once
-    const existingSkills = await this.databaseService.prisma.skill.findMany({
-      where: {
-        name: {
-          in: skills,
-        },
-      },
-    });
-  
-    const existingSkillNames = existingSkills.map((skill) => skill.name);
-    const skillsToCreate = skills.filter((skill) => !existingSkillNames.includes(skill));
-  
-    // Bulk insert new skills
-    if (skillsToCreate.length > 0) {
-      await this.databaseService.prisma.skill.createMany({
-        data: skillsToCreate.map((name) => ({ name })),
-      });
-    }
-
-    return await this.databaseService.prisma.skill.findMany({
-      where: {
-        name: {
-          in: skills,
-        },
-      },
-    });
   }
 
   restructureRecipe(recipe: JoinedRecipe): RestructuredRecipe {

@@ -5,9 +5,10 @@ import { RecipeTransformationService } from '@core/domain/services/recipe_transf
 import { GenAIService } from '@core/infrastructure/external_services/gen_ai_service/gen_ai.service';
 import { RecipeRepository } from '@core/infrastructure/database/repository/recipe.repository';
 import { IngredientModule } from './ingredient.module';
+import { SkillModule } from './skill.module';
 
 @Module({
-    imports: [IngredientModule],
+    imports: [IngredientModule, SkillModule],
     controllers: [
         RecipeGeneratorController
     ],
