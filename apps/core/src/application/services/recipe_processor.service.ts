@@ -5,6 +5,7 @@ import { Ingredient } from "@core/domain/interfaces/recipe.interface"
 import { RecipeRepository } from "@core/infrastructure/database/repository/recipe.repository";
 import { IngredientRepository } from "@core/infrastructure/database/repository/ingredient.repository";
 import { SkillRepository } from "@core/infrastructure/database/repository/skill.repository";
+import { Recipe } from "@core/domain/models/recipe.model";
 
 @Injectable()
 export class RecipeProcessorService {
@@ -15,9 +16,14 @@ export class RecipeProcessorService {
         private readonly skillRepository: SkillRepository,
     ) {}
 
-    async processRecipe(userIngredients: IUserIngredients) {
+    async processRecipe(userIngredients: IUserIngredients): Promise<Recipe> {
         const transformedRecipe = await this.recipeTransformationService.transformRecipe(userIngredients);
-        const { ingredients } = transformedRecipe;
+        const { name, ingredients } = transformedRecipe;
+        // validate the recipe
+        const checkRecipeResult = await this.recipeRepository.checkRecipeByName(name);
+        if (checkRecipeResult) {
+          return checkRecipeResult
+        }
         // save ingredients if they are not in the database
         const ingredientNames = ingredients.map((ingredient) => ingredient.name);
         const ingredientFromDB = await this.processIngredientsForCreate(ingredientNames, ingredients);
@@ -31,7 +37,7 @@ export class RecipeProcessorService {
         if (!recipe) {
             throw new Error("Failed to save the recipe");
         }
-        return transformedRecipe;
+        return recipe;
     }
 
     async processIngredientsForCreate(ingredientNames: string[], ingredients: Ingredient[]) {

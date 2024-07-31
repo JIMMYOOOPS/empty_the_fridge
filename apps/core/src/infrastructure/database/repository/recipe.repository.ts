@@ -18,15 +18,7 @@ export class RecipeRepository implements IRecipeEntity {
 
   async create(recipe: IRecipe, ingredientFromDB: Ingredient[], skillsFromDB: Skill[]): Promise<Recipe> {
     try {
-      const { name, ingredients, origin, calories, cookingTime, stepsToProduce, skillsRequired } = recipe;      
-      const validateRecipeName = await this.databaseService.prisma.recipe.findFirst({
-        where: {
-          name,
-        },
-      });
-      if (validateRecipeName) {
-        throw new HttpException(ErrorMessages[ErrorType.Recipe.NameAlreadyExists], HttpStatus.BAD_REQUEST);
-      }
+      const { name, ingredients, origin, calories, cookingTime, stepsToProduce, skillsRequired } = recipe;
 
       const updatedRecipe = {
         name,
@@ -173,6 +165,38 @@ export class RecipeRepository implements IRecipeEntity {
         throw error;
       }
       this.logger.error(`Failed to find recipe by id: ${error}`);
+      throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async checkRecipeByName(name: string): Promise<Recipe | null> {
+    try {
+      const result = await this.databaseService.prisma.recipe.findFirst({
+        where: {
+          name,
+        },
+        include: {
+          ingredients: {
+            include: {
+              ingredient: true,
+            },
+          },
+          skillsRequired: {
+            include: {
+              skill: true,
+            },
+        }}
+      });
+      if (!result) {
+        return null;
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      this.logger.error(`Failed to find recipe by name: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.General.InternalServerError], HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

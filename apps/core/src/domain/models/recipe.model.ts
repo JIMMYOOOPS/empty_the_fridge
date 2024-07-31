@@ -19,6 +19,8 @@ class Recipe {
   name: string;
   origin: string;
   stepsToProduce: string[];
+  calories: number;
+  cookingTime: number;
   id: string;
   createdAt: Date;
   updatedAt: Date;
