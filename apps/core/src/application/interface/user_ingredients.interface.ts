@@ -5,6 +5,7 @@ interface IUserIngredient {
 
 interface IUserIngredients {
     ingredients: IUserIngredient[];
+    origin: string;
 }
 
 export { 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 class Ingredient {
     @ApiProperty({
@@ -26,4 +26,13 @@ export class RecipeGeneratorDto {
         isArray: true
     })
     ingredients: Ingredient[];
+
+    @ApiProperty({
+        description: 'Origin of the recipe',
+        required: true,
+        type: 'string'
+    })
+    @IsString()
+    @IsNotEmpty()
+    origin: string;
 }

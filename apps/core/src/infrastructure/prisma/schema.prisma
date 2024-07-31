@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,12 +8,53 @@ datasource db {
 }
 
 model Recipe {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  ingredients String[]
-  instructions String
-  directions  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String             @id @default(cuid())
+  name           String             @unique
+  origin         String?
+  stepsToProduce String[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  ingredients    RecipeIngredient[]
+  skillsRequired RecipeSkill[]
+  cookingTime    Int                @default(0)
+  calories       Int                @default(0)
+}
+
+model Ingredient {
+  id                String             @id @default(cuid())
+  name              String             @unique
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  type              String             @db.VarChar(255)
+  recipeIngredients RecipeIngredient[]
+  recipesCount    Int                 @default(1)
+}
+
+model RecipeIngredient {
+  recipeId            String
+  ingredientId        String
+  quantity            String
+  processingMethod    String?
+  quantityMeasurement String?
+  ingredient          Ingredient @relation(fields: [ingredientId], references: [id])
+  recipe              Recipe     @relation(fields: [recipeId], references: [id])
+
+  @@id([recipeId, ingredientId])
+}
+
+model Skill {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  recipeSkills RecipeSkill[]
+}
+
+model RecipeSkill {
+  recipeId String
+  skillId  String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  skill    Skill  @relation(fields: [skillId], references: [id])
+
+  @@id([recipeId, skillId])
 }
