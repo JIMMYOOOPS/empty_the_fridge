@@ -94,10 +94,14 @@ export class RecipeRepository implements IRecipeEntity {
 
       const recipeFilter = new RecipeFilter();
       filter?.name && recipeFilter.byName(filter.name);
+      filter?.origin && recipeFilter.byOrigin(filter.origin);
+      filter?.calories && recipeFilter.byCalories(filter.calories);
+      filter?.cookingTime && recipeFilter.byCookingTime(filter.cookingTime);
       const conditions = recipeFilter.getConditions();
       const where  = conditions.length > 0 ? { where : {
         AND: conditions
       }} : {};
+
       const result = await this.databaseService.prisma.recipe.paginate(
         {
           orderBy: {

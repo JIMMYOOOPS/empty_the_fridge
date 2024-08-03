@@ -3,6 +3,7 @@ const QueryConstants = {
     SOME: 'some',
     INSENSITIVE: 'insensitive',
     EQUAL: 'equal',
+    LESS_THAN: 'lessThan',
     };
 
 export {

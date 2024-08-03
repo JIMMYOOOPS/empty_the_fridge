@@ -17,7 +17,12 @@ export class GenericFilter<T> implements IBaseFilter {
           contains: value,
           mode: QueryConstants.INSENSITIVE, // case-insensitive
         };
+      } else if (conditionType === QueryConstants.LESS_THAN) {
+        this.where[key] = {
+          lt: value,
+        };
       }
+
       return this;
     }
 

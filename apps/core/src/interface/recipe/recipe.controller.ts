@@ -20,12 +20,16 @@ export class RecipeController {
   async findAll(
     @Query() params: FindAllRecipeDto,
   ): Promise<PaginationResult<Recipe>> {
-    const { page, size, name } = params;
+    const { page, size, name, ingredients, calories, cookingTime, origin } = params;
     const options = {
       page,
       size,
       filter: {
         name,
+        ingredients,
+        calories,
+        cookingTime,
+        origin
       }
     };
     return this.recipeService.findRecipe(options);

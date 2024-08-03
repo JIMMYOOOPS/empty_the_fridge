@@ -12,12 +12,26 @@ export class RecipeService {
     page?: number;
     filter: Record<string, any>;
   }): Promise<PaginationResult<Recipe>> {
-    return this.recipeRepository.paginateRecipe(options);
+    // remove undefined values from the filter object
+    const nextOptions = {
+      ...options,
+      filter: this.getFilteredOptions(options).filter,
+    };
+    
+    return this.recipeRepository.paginateRecipe(nextOptions);
   }
 
   async findById(id: string): Promise<Recipe> {
     return this.recipeRepository.findRecipeById(id);
   }
 
-  // Add other methods (findById, create, update, delete) similarly
+  // remove undefined values from the filter object
+  getFilteredOptions(options: { filter: Record<string, any> }): { filter: Record<string, any> } {
+    const filterOptions = options.filter;
+    const entries = Object.entries(filterOptions);
+    // Filter out entries with undefined values
+    const filteredEntries = entries.filter(([key, value]) => value !== undefined);
+    const filter = Object.fromEntries(filteredEntries);
+    return { filter };
+  }
 }
