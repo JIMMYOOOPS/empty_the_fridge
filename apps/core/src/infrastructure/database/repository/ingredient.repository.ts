@@ -35,7 +35,7 @@ export class IngredientRepository implements IIngredientEntity {
             const result = await this.databaseService.prisma.ingredient.paginate(
               {
                 orderBy: {
-                  createdAt: 'desc',
+                  recipesCount: 'desc',
                 },
                 include: undefined,
                 ...where
