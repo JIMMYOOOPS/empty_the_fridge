@@ -1,5 +1,44 @@
 import { PaginationResult } from '@core/shared/interface/paginator.interface'
 import { Prisma, PrismaClient } from '@prisma/client'
+import { Connector } from '@google-cloud/cloud-sql-connector';
+
+export class ConnectorManager {
+  private connector: Connector | null = null;
+
+  public async createConnectorServer(): Promise<string> {
+    try {
+      this.connector = new Connector();
+      await this.connector.startLocalProxy({
+        instanceConnectionName: 'empty-the-fridge-433909:asia-east1:empty-the-fridge',
+        listenOptions: { path: '.s.PGSQL.5432' },
+      });
+      const hostPath = process.cwd();
+      const dataSourceUrl =
+        `postgresql://postgres:fridgeempty@localhost/emptythefridge?host=${hostPath}`;
+      return dataSourceUrl;
+    } catch (error) {
+      console.error('Failed to connect to the database: ', error);
+      throw error;
+    }
+  }
+
+  public async closeConnectorServer(): Promise<void> {
+    if (this.connector) {
+      try {
+        this.connector.close();
+        console.log('Connector server stopped successfully.');
+      } catch (error) {
+        console.error('Failed to stop the connector server: ', error);
+        throw error;
+      } finally {
+        this.connector = null;
+      }
+    } else {
+      console.warn('No connector server to stop.');
+    }
+  }
+}
+
 
 export const createExtendedPrismaClient = ({ url }: { url?: string } = {}) => {
   const prismaClient = new PrismaClient({

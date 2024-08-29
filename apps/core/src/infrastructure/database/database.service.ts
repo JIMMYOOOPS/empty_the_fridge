@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import {
   createExtendedPrismaClient,
   extendedPrismaClient,
+  ConnectorManager
 } from './prisma.instance'
 import {
   ErrorType,
@@ -13,20 +14,19 @@ import {
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private client: extendedPrismaClient
   private readonly logger = new Logger(DatabaseService.name);
-
-  constructor(readonly configService: ConfigService) {
-    // Create the Prisma client
-    const dbUrl = configService.getOrThrow<string>('DATABASE_URL')
-    this.client = createExtendedPrismaClient({
-      url: dbUrl,
-    })
-  }
+  private connector: ConnectorManager = new ConnectorManager();
+  constructor(
+    readonly configService: ConfigService,
+  ) {}
   async onModuleInit() {
     try {
       // Attempt to connect to the database
-      await this.client.$connect();
-      const dbUrlWithoutCredentials = this.configService.getOrThrow<string>('DATABASE_URL').replace(/:\/\/.*@/, '://***@');
-      this.logger.log(`Connected to database at ${dbUrlWithoutCredentials} on ${new Date().toISOString()}`);
+      const databaseURL = await this.connector.createConnectorServer();
+      this.client = createExtendedPrismaClient({ url: databaseURL });
+      this.client.$connect();
+      this.logger.log(`Connected to database on ${new Date().toISOString()}`);
+      // this.connector.closeConnectorServer();
+      // await  this.client.$disconnect();
     } catch (error) {
       this.logger.error(`Failed to connect to the database: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.Database.ConnectionError], HttpStatus.INTERNAL_SERVER_ERROR);
@@ -37,6 +37,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     try {
       // Attempt to disconnect from the database
       await this.client.$disconnect();
+      await this.connector.closeConnectorServer();
       this.logger.log(`Disconnected from database on ${new Date().toISOString()}`);
     } catch (error) {
       this.logger.error(`Failed to disconnect from the database: ${error}`);
