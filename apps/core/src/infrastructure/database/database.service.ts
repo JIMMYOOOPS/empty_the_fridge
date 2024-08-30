@@ -17,16 +17,28 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private connector: ConnectorManager = new ConnectorManager();
   constructor(
     readonly configService: ConfigService,
-  ) {}
+  ) {
+        // Add process event listeners
+        process.on('SIGINT', async () => {
+          this.logger.log('SIGINT received');
+          await this.onModuleDestroy();
+          process.exit(0);
+        });
+    
+        process.on('SIGTERM', async () => {
+          this.logger.log('SIGTERM received');
+          await this.onModuleDestroy();
+          process.exit(0);
+        });
+  }
   async onModuleInit() {
     try {
       // Attempt to connect to the database
       const databaseURL = await this.connector.createConnectorServer();
+      this.logger.log('databaseURL', databaseURL);
       this.client = createExtendedPrismaClient({ url: databaseURL });
       this.client.$connect();
       this.logger.log(`Connected to database on ${new Date().toISOString()}`);
-      // this.connector.closeConnectorServer();
-      // await  this.client.$disconnect();
     } catch (error) {
       this.logger.error(`Failed to connect to the database: ${error}`);
       throw new HttpException(ErrorMessages[ErrorType.Database.ConnectionError], HttpStatus.INTERNAL_SERVER_ERROR);
